@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة أبطال المعرفة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; }
+        body { background-color: #0f1026; color: #ffffff; display: flex; min-height: 100vh; }
+
+        /* ===== القائمة الجانبية ===== */
+        .sidebar { width: 270px; background-color: #171836; border-left: 2px solid #292a54; display: flex; flex-direction: column; padding-top: 20px; }
+        .profile-card-sidebar { text-align: center; padding: 15px; background: #1f2147; margin: 0 15px 25px 15px; border-radius: 16px; border: 2px solid #35386c; }
+        .avatar-box { width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%; border: 3px solid #00f2fe; overflow: hidden; background: #2a2d5c; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-box svg { width: 45px; height: 45px; fill: #00f2fe; }
+        .profile-name { font-size: 18px; font-weight: bold; color: #ffffff; margin-bottom: 5px;}
+        .profile-info { font-size: 12px; color: #a5a8db; margin-bottom: 3px; }
+        .badge-student { display: inline-block; background: #7f00ff; color: #fff; font-size: 11px; padding: 3px 12px; border-radius: 20px; margin-top: 5px; font-weight: bold; }
+
+        .nav-container { display: flex; flex-direction: column; gap: 8px; padding: 0 15px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; color: #a5a8db; cursor: pointer; transition: all 0.3s; font-size: 16px; font-weight: bold; border-radius: 12px; }
+        .nav-item svg { width: 22px; height: 22px; fill: #a5a8db; transition: 0.3s; }
+        .nav-item:hover { background-color: #252854; color: #ffffff; }
+        .nav-item:hover svg { fill: #00f2fe; }
+        .nav-item.active { background: linear-gradient(135deg, #7f00ff, #e100ff); color: #ffffff; box-shadow: 0 5px 15px rgba(225, 0, 255, 0.3); }
+        .nav-item.active svg { fill: #ffffff; }
+
+        /* ===== المحتوى الرئيسي ===== */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .page-header { font-size: 26px; font-weight: bold; margin-bottom: 25px; color: #ffffff; display: flex; align-items: center; gap: 10px; }
+        .view-panel { display: none; }
+        .view-panel.active { display: block; }
+
+        /* الشاشة الرئيسية */
+        .welcome-hero { background: linear-gradient(135deg, #1e204c, #2a1b4e); border-radius: 20px; padding: 30px; border: 2px solid #3d3b7a; margin-bottom: 25px; }
+        .welcome-title { font-size: 24px; color: #00f2fe; margin-bottom: 10px; }
+        .welcome-sub { font-size: 16px; color: #c4c7ff; margin-bottom: 20px; }
+        .progress-container { background: #12132b; padding: 20px; border-radius: 15px; border: 1px solid #2d2f66; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
+        .progress-bar-bg { width: 100%; height: 22px; background-color: #1c1d42; border-radius: 20px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #00f2fe, #00e676); width: 0%; transition: width 0.6s ease; border-radius: 20px; }
+
+        /* كروت الفيديوهات */
+        .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .course-card { background-color: #181a3c; border-radius: 18px; overflow: hidden; border: 2px solid #2b2e5c; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; }
+        .course-card:hover { transform: translateY(-7px); border-color: #00f2fe; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.15); }
+        .card-img-wrapper { width: 100%; height: 160px; position: relative; background: #252854; overflow: hidden; }
+        
+        /* قسم الأشكال الطفولية الجديدة */
+        .icon-display {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #252854 0%, #12132b 100%);
+        }
+        .icon-display svg {
+            width: 85px;
+            height: 85px;
+            fill: currentColor;
+            filter: drop-shadow(0 0 15px currentColor); /* بيعمل توهج بنفس لون الشكل */
+            transition: transform 0.3s ease;
+        }
+        .course-card:hover .icon-display svg { transform: scale(1.15) rotate(5deg); }
+        
+        .card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #ffffff; }
+        
+        .card-btn { width: 100%; background: linear-gradient(135deg, #00c6ff, #0072ff); color: #ffffff; border: none; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .card-btn svg { width: 18px; height: 18px; fill: #fff; filter: none; }
+        .card-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        .btn-extra { background: linear-gradient(135deg, #ff007f, #ff8c00); }
+
+        /* شارات حالة الفيديو */
+        .status-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; z-index: 2; }
+        .status-completed { background: rgba(0, 230, 118, 0.9); color: #000; border: 1px solid #00e676; }
+        .status-watching { background: rgba(255, 152, 0, 0.9); color: #000; border: 1px solid #ff9800; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(15,16,38,0.7), transparent); pointer-events: none; z-index: 1; }
+
+        /* شاشة المشاهدة */
+        .back-btn { background: #181a3c; color: #00f2fe; border: 1px solid #00f2fe; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-bottom: 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .back-btn:hover { background: #00f2fe; color: #000; }
+        .video-box { width: 100%; background-color: #000; border-radius: 16px; overflow: hidden; border: 2px solid #2b2e5c; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        video { width: 100%; display: block; max-height: 500px; }
+        .video-error-msg { padding: 40px; text-align: center; color: #ff5252; font-size: 18px; display: none; }
+
+        /* شاشات الحساب والإعدادات */
+        .profile-form { background: #181a3c; padding: 30px; border-radius: 18px; border: 2px solid #2b2e5c; max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #c4c7ff; font-weight: bold; }
+        .form-group input { width: 100%; padding: 12px; background: #0f1026; border: 1px solid #35386c; color: #fff; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s; }
+        .form-group input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.1); }
+        
+        .save-btn { background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; border: none; padding: 12px 30px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px;}
+        .save-btn:hover { transform: scale(1.02); }
+        .save-msg { display: none; margin-top: 15px; padding: 12px; background: #00e67622; color: #00e676; border: 1px solid #00e676; border-radius: 10px; font-weight: bold; text-align: center; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; border-left: none; border-bottom: 2px solid #292a54; padding-top: 10px; }
+            .profile-card-sidebar { display: none; }
+            .nav-container { flex-direction: row; justify-content: space-around; margin-bottom: 10px; flex-wrap: wrap; gap: 5px; }
+            .nav-item { padding: 10px; font-size: 14px; flex: 1; justify-content: center; }
+            .nav-item svg { display: none; }
+            .main-content { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="profile-card-sidebar">
+            <div class="avatar-box">
+                <img id="sidebar-img" src="" style="display:none;">
+                <svg id="default-avatar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            </div>
+            <div id="sidebar-name" class="profile-name">اسم البطلة</div>
+            <div id="sidebar-phone" class="profile-info">هاتف: لم يحدد</div>
+            <div id="sidebar-parent" class="profile-info">ولي الأمر: لم يحدد</div>
+            <span class="badge-student">طالبة متميزة</span>
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-item active" onclick="switchTab('home')">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> الرئيسية
+            </div>
+            <div class="nav-item" onclick="switchTab('lectures')">
+                <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg> المحاضرات
+            </div>
+            <div class="nav-item" onclick="switchTab('extras')">
+                <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> إضافات
+            </div>
+            <div class="nav-item" onclick="switchTab('profile')">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> حسابي
+            </div>
+            <div class="nav-item" onclick="switchTab('settings')">
+                <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> الإعدادات
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <div id="home-panel" class="view-panel active">
+            <div class="welcome-hero">
+                <div class="welcome-title" id="welcome-text">أهلاً بكِ في المنصة التعليمية</div>
+                <div class="welcome-sub">واصلات التعلم واجمعي درجات النجاح!</div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>مستوى الإنجاز (للمحاضرات الأساسية)</span>
+                        <span id="progress-percent" style="color: #00f2fe;">0%</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+                    <div style="margin-top: 10px; font-size: 14px; color: #a5a8db;" id="progress-text">
+                        أكملتِ 0 محاضرة من إجمالي 16
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lectures-panel" class="view-panel">
+            <div class="page-header">قائمة المحاضرات الأساسية</div>
+            <div id="courses-grid" class="courses-grid"></div>
+        </div>
+
+        <div id="extras-panel" class="view-panel">
+            <div class="page-header">فيديوهات إضافية وممتعة</div>
+            <div id="extras-grid" class="courses-grid"></div>
+        </div>
+
+        <div id="lecture-view-panel" class="view-panel">
+            <button class="back-btn" onclick="goBackToPreviousTab()">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> العودة
+            </button>
+            <div class="page-header" id="video-title-header">جاري التحميل...</div>
+            <div class="video-box">
+                <video id="video-player" controls controlsList="nodownload">متصفحك لا يدعم تشغيل الفيديو.</video>
+                <div id="video-error" class="video-error-msg"></div>
+            </div>
+        </div>
+
+        <div id="profile-panel" class="view-panel">
+            <div class="page-header">تحديث بيانات الحساب</div>
+            <div class="profile-form">
+                <div class="form-group"><label>اسم الطالبة</label><input type="text" id="input-name" placeholder="اكتبي اسمك هنا"></div>
+                <div class="form-group"><label>رقم الهاتف</label><input type="text" id="input-phone" placeholder="01xxxxxxxxx"></div>
+                <div class="form-group"><label>رقم هاتف ولي الأمر</label><input type="text" id="input-parent" placeholder="01xxxxxxxxx"></div>
+                <div class="form-group"><label>تغيير الصورة الشخصية</label><input type="file" id="input-img" accept="image/*" style="border:none; padding-left:0;"></div>
+                <button class="save-btn" onclick="saveProfile()">حفظ بيانات الحساب</button>
+                <div id="save-profile-msg" class="save-msg">تم حفظ البيانات بنجاح!</div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="view-panel">
+            <div class="page-header">إعدادات المنصة (إضافة المحاضرات)</div>
+            <div class="profile-form">
+                <div style="margin-bottom: 25px; padding: 15px; background: #252854; border-radius: 10px; border: 1px solid #35386c; font-size: 14px; color: #a5a8db; line-height: 1.6;">
+                    لو قمتي بإضافة فيديو جديد (مثل 17.mp4) في الفولدر، زودي الأرقام تحت عشان تظهر. المنصة هتحط شكل وغلاف جديد تلقائياً للكارت الجديد! ✨
+                </div>
+                <div class="form-group"><label>إجمالي عدد المحاضرات (فولدر M)</label><input type="number" id="input-total-lec" min="1"></div>
+                <div class="form-group"><label>إجمالي عدد الإضافات (فولدر N)</label><input type="number" id="input-total-extras" min="1"></div>
+                <button class="save-btn" onclick="saveSettings()" style="background: linear-gradient(135deg, #7f00ff, #e100ff); color: white;">حفظ الإعدادات والتحديث</button>
+                <div id="save-settings-msg" class="save-msg">تم التحديث بنجاح! راجعي قائمة المحاضرات.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // مكتبة الأشكال المدمجة (SVG) والألوان المبهجة
+        // ==========================================
+        const iconLibrary = [
+            '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>', // طفلة/بروفايل
+            '<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>', // نجمة
+            '<path d="M12 3l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"/>', // وردة/شكل مبهج
+            '<path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>', // تاج
+            '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.1C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.1.25.1.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM21 18.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>', // كتاب
+            '<path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/>', // لمبة ذكاء
+            '<path d="M12 2.5a5.5 5.5 0 0 1 3.09 10.02c-.06.4-.1.82-.1.12a6 6 0 0 1-1.63 3.5l1.64 2.84 2.37 1.37a1.5 1.5 0 0 1-1.5 2.6l-2.36-1.36L12 18.84l-1.51 2.75a1.5 1.5 0 1 1-2.6-1.5l2.36-1.36 1.64-2.85A6 6 0 0 1 9.9 12.4a5.5 5.5 0 1 1 2.1-9.9z"/>', // صاروخ/انطلاق
+            '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>' // كوكب/عالم
+        ];
+
+        // ألوان نيون مبهجة (بينك، سماوي، فستقي، أصفر، بنفسجي فاتح، برتقالي، أخضر تفاحي، أحمر نيون)
+        const colorLibrary = ['#ff007f', '#00f2fe', '#00e676', '#ffea00', '#aa00ff', '#ff8c00', '#69f0ae', '#ff1744'];
+
+        // ==========================================
+        // إدارة البيانات والتخزين الدائم
+        // ==========================================
+        let defaultData = {
+            name: "البطلة الصغيرة",
+            phone: "",
+            parentPhone: "",
+            profilePic: "",
+            totalLectures: 16,
+            totalExtras: 2,
+            videoProgress: {}
+        };
+
+        let appData = JSON.parse(localStorage.getItem('kidPlatformData_v6')) || defaultData;
+        if(!appData.videoProgress) appData.videoProgress = {};
+        if(!appData.totalLectures) appData.totalLectures = 16;
+        if(!appData.totalExtras) appData.totalExtras = 2;
+
+        let currentFolder = '', currentVideoId = '', currentReturnTab = 'lectures'; 
+        const videoPlayer = document.getElementById('video-player');
+
+        // ==========================================
+        // تحديث الواجهة والبيانات
+        // ==========================================
+        function updateUI() {
+            document.getElementById('sidebar-name').innerText = appData.name;
+            document.getElementById('sidebar-phone').innerText = appData.phone ? `هاتف: ${appData.phone}` : "هاتف: لم يحدد";
+            document.getElementById('sidebar-parent').innerText = appData.parentPhone ? `ولي الأمر: ${appData.parentPhone}` : "ولي الأمر: لم يحدد";
+            document.getElementById('welcome-text').innerText = `أهلاً بكِ يا ${appData.name}`;
+
+            const imgEl = document.getElementById('sidebar-img');
+            const iconEl = document.getElementById('default-avatar-icon');
+            
+            if (appData.profilePic) {
+                imgEl.src = appData.profilePic;
+                imgEl.style.display = 'block'; iconEl.style.display = 'none';
+            } else {
+                imgEl.style.display = 'none'; iconEl.style.display = 'block';
+            }
+
+            let completedCount = 0;
+            for(let key in appData.videoProgress) {
+                if(key.startsWith('M_') && appData.videoProgress[key].status === 'completed') { completedCount++; }
+            }
+
+            let percent = Math.round((completedCount / appData.totalLectures) * 100);
+            if(percent > 100) percent = 100;
+            
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-percent').innerText = percent + '%';
+            document.getElementById('progress-text').innerText = `أكملتِ ${completedCount} محاضرة من إجمالي ${appData.totalLectures}`;
+        }
+
+        // ==========================================
+        // التنقل بين الشاشات
+        // ==========================================
+        function switchTab(tabName) {
+            videoPlayer.pause();
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+            if (tabName === 'home') {
+                document.getElementById('home-panel').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (tabName === 'lectures') {
+                document.getElementById('lectures-panel').classList.add('active');
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+                buildCards('M', 'courses-grid', appData.totalLectures, 'المحاضرة رقم');
+            } else if (tabName === 'extras') {
+                document.getElementById('extras-panel').classList.add('active');
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+                buildCards('N', 'extras-grid', appData.totalExtras, 'إضافة رقم', true);
+            } else if (tabName === 'profile') {
+                document.getElementById('profile-panel').classList.add('active');
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+                fillProfileForm();
+            } else if (tabName === 'settings') {
+                document.getElementById('settings-panel').classList.add('active');
+                document.querySelectorAll('.nav-item')[4].classList.add('active');
+                fillSettingsForm();
+            } else if (tabName === 'lecture-view') {
+                document.getElementById('lecture-view-panel').classList.add('active');
+                if(currentReturnTab === 'lectures') document.querySelectorAll('.nav-item')[1].classList.add('active');
+                if(currentReturnTab === 'extras') document.querySelectorAll('.nav-item')[2].classList.add('active');
+            }
+        }
+
+        function goBackToPreviousTab() { switchTab(currentReturnTab); }
+
+        // ==========================================
+        // بناء الكروت (بالأشكال والألوان التلقائية)
+        // ==========================================
+        function buildCards(folder, gridId, count, titlePrefix, isExtra = false) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= count; i++) {
+                const videoKey = `${folder}_${i}`;
+                const progress = appData.videoProgress[videoKey];
+                
+                let statusHtml = '';
+                if (progress && progress.status === 'completed') {
+                    statusHtml = `<div class="status-badge status-completed">مكتملة ✅</div>`;
+                } else if (progress && progress.status === 'watching' && progress.time > 1) {
+                    statusHtml = `<div class="status-badge status-watching">قيد المشاهدة ⏸️</div>`;
+                }
+
+                const btnClass = isExtra ? 'btn-extra' : '';
+                const btnText = (progress && progress.time > 1 && progress.status !== 'completed') ? 'استكمال المشاهدة' : 'ابدأ المشاهدة';
+
+                // سحر الأشكال والألوان (بيعمل تكرار تلقائي لو الأرقام زادت عن عدد الأشكال)
+                const currentIconPath = iconLibrary[(i - 1) % iconLibrary.length];
+                
+                // عشان المحاضرات والإضافات ميكونوش نفس اللون، بنعمل إزاحة صغيرة للإضافات
+                const colorShift = isExtra ? 3 : 0; 
+                const currentColor = colorLibrary[(i - 1 + colorShift) % colorLibrary.length];
+
+                const card = document.createElement('div');
+                card.className = `course-card`;
+                card.innerHTML = `
+                    <div class="card-img-wrapper">
+                        ${statusHtml}
+                        <div class="overlay"></div>
+                        <div class="icon-display" style="color: ${currentColor};">
+                            <svg viewBox="0 0 24 24">${currentIconPath}</svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${titlePrefix} ${i}</div>
+                        <button class="card-btn ${btnClass}" onclick="playVideo('${folder}', ${i}, '${titlePrefix}', '${isExtra ? 'extras' : 'lectures'}')">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> ${btnText}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // ==========================================
+        // مشغل الفيديو
+        // ==========================================
+        function playVideo(folder, id, titlePrefix, returnTab) {
+            currentReturnTab = returnTab; currentFolder = folder; currentVideoId = id;
+            const videoKey = `${folder}_${id}`;
+            switchTab('lecture-view');
+            document.getElementById('video-title-header').innerText = `${titlePrefix} ${id}`;
+            
+            const errorMsg = document.getElementById('video-error');
+            errorMsg.style.display = 'none'; videoPlayer.style.display = 'block';
+            videoPlayer.src = `${folder}/${id}.mp4`;
+            
+            videoPlayer.onloadedmetadata = function() {
+                if (appData.videoProgress[videoKey] && appData.videoProgress[videoKey].time > 0 && appData.videoProgress[videoKey].status !== 'completed') {
+                    videoPlayer.currentTime = appData.videoProgress[videoKey].time;
+                }
+            };
+            videoPlayer.load(); videoPlayer.play().catch(e => console.log("Auto-play prevented"));
+
+            videoPlayer.onerror = function() {
+                videoPlayer.style.display = 'none'; errorMsg.style.display = 'block';
+                errorMsg.innerText = `عذراً، لم نتمكن من إيجاد الفيديو: ${folder}/${id}.mp4`;
+            };
+        }
+
+        videoPlayer.ontimeupdate = function() {
+            if(!currentFolder || !currentVideoId) return;
+            const videoKey = `${currentFolder}_${currentVideoId}`;
+            if(!appData.videoProgress[videoKey]) appData.videoProgress[videoKey] = { status: 'watching', time: 0 };
+            
+            if(appData.videoProgress[videoKey].status !== 'completed') {
+                appData.videoProgress[videoKey].time = videoPlayer.currentTime;
+                appData.videoProgress[videoKey].status = 'watching';
+                localStorage.setItem('kidPlatformData_v6', JSON.stringify(appData));
+            }
+        };
+
+        videoPlayer.onended = function() {
+            if(!currentFolder || !currentVideoId) return;
+            const videoKey = `${currentFolder}_${currentVideoId}`;
+            appData.videoProgress[videoKey] = { status: 'completed', time: videoPlayer.currentTime };
+            localStorage.setItem('kidPlatformData_v6', JSON.stringify(appData));
+            updateUI();
+        };
+
+        // ==========================================
+        // حفظ بيانات الحساب
+        // ==========================================
+        function fillProfileForm() {
+            document.getElementById('input-name').value = appData.name;
+            document.getElementById('input-phone').value = appData.phone;
+            document.getElementById('input-parent').value = appData.parentPhone;
+        }
+
+        function saveProfile() {
+            appData.name = document.getElementById('input-name').value || "البطلة الصغيرة";
+            appData.phone = document.getElementById('input-phone').value;
+            appData.parentPhone = document.getElementById('input-parent').value;
+            const fileInput = document.getElementById('input-img');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { appData.profilePic = e.target.result; finalizeProfileSave(); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else { finalizeProfileSave(); }
+        }
+
+        function finalizeProfileSave() {
+            localStorage.setItem('kidPlatformData_v6', JSON.stringify(appData));
+            updateUI();
+            const msg = document.getElementById('save-profile-msg');
+            msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        // ==========================================
+        // حفظ الإعدادات
+        // ==========================================
+        function fillSettingsForm() {
+            document.getElementById('input-total-lec').value = appData.totalLectures;
+            document.getElementById('input-total-extras').value = appData.totalExtras;
+        }
+
+        function saveSettings() {
+            appData.totalLectures = parseInt(document.getElementById('input-total-lec').value) || 16;
+            appData.totalExtras = parseInt(document.getElementById('input-total-extras').value) || 2;
+            localStorage.setItem('kidPlatformData_v6', JSON.stringify(appData));
+            updateUI();
+            const msg = document.getElementById('save-settings-msg');
+            msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        // تشغيل
+        updateUI();
+    </script>
+</body>
+</html>
